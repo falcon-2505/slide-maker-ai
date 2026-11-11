@@ -211,6 +211,19 @@
 .pres-slide h3{font-size:clamp(20px,3.2vw,46px);line-height:1.14;max-width:85%;margin:14px 0}.pres-subtitle{font-size:clamp(12px,1.5vw,22px);opacity:.8}.pres-bullets{max-width:90%;padding-left:1.4em;font-size:clamp(11px,1.45vw,21px);line-height:1.35}.pres-bullets li{margin:0 0 .65em}.pres-index{position:absolute;top:6%;left:6%;font-size:11px;letter-spacing:2px;opacity:.65}.pres-decor{position:absolute;right:-3%;top:-18%;font-size:clamp(150px,30vw,380px);opacity:.07;pointer-events:none}.pres-footer{position:absolute;bottom:5%;left:6%;right:6%;display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.5px;opacity:.6}
 .pres-notes{margin:14px 0;color:var(--text)}.pres-notes p{line-height:1.6}.pres-controls{justify-content:center;margin:18px 0}.pres-controls span{font-weight:700;min-width:70px;text-align:center}.pres-thumbs{display:flex;gap:9px;overflow-x:auto;padding:7px 0 14px}.pres-thumb{flex:0 0 130px;display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);text-align:left;font-size:12px}.pres-thumb.selected{outline:2px solid #6487ff}.pres-thumb span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.pres-thumb b{color:#6487ff}
 @media(max-width:640px){.presentation-viewer{padding:12px}.pres-slide{border-radius:12px;padding:8%}.pres-slide h3{font-size:clamp(17px,5vw,26px)}.pres-bullets{font-size:clamp(9px,2.6vw,14px);line-height:1.22}.pres-bullets li{margin-bottom:.4em}.pres-footer,.pres-index{font-size:7px}.pres-top h2{font-size:18px}.pres-thumb{flex-basis:110px}}
+
+/* v2: animated wallpapers, slide imagery, learning games */
+body::before,body::after{content:"";position:fixed;inset:-25%;pointer-events:none;z-index:-1;opacity:.55;filter:blur(60px);animation:wallDrift 22s ease-in-out infinite alternate}
+body::before{background:radial-gradient(ellipse at 24% 35%,rgba(77,153,255,.28),transparent 42%),radial-gradient(ellipse at 78% 70%,rgba(155,100,248,.24),transparent 40%)}
+body::after{background:radial-gradient(ellipse at 70% 25%,rgba(52,220,188,.20),transparent 45%),radial-gradient(ellipse at 30% 80%,rgba(244,135,194,.17),transparent 43%);animation-direction:alternate-reverse;animation-duration:29s}
+@keyframes wallDrift{0%{transform:translate3d(-4%,-3%,0) rotate(-7deg) scale(1)}100%{transform:translate3d(6%,5%,0) rotate(10deg) scale(1.12)}}
+[data-wallpaper="orbs"] body::before{background:radial-gradient(circle at 24% 40%,rgba(48,199,245,.45),transparent 24%),radial-gradient(circle at 74% 58%,rgba(127,92,245,.4),transparent 28%)}
+[data-wallpaper="orbs"] body::after{background:radial-gradient(circle at 58% 20%,rgba(246,123,185,.32),transparent 22%)}
+[data-wallpaper="mesh"] body::before{background:conic-gradient(from 90deg at 50% 50%,rgba(34,197,170,.3),rgba(79,113,246,.25),rgba(194,96,241,.3),rgba(34,197,170,.3))}
+[data-wallpaper="still"] body::before,[data-wallpaper="still"] body::after{display:none}
+.pres-layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:4%;align-items:center;min-height:75%;width:100%}.pres-content{min-width:0}.pres-photo{margin:0;width:100%;aspect-ratio:4/5;max-height:360px;border-radius:22px;overflow:hidden;box-shadow:0 16px 38px rgba(0,0,0,.18)}.pres-photo img{width:100%;height:100%;object-fit:cover;display:block}.pres-slide h3{max-width:100%;overflow-wrap:anywhere}.pres-bullets{max-width:100%}.game-result{margin-top:22px}.flash-card{min-height:190px;display:grid;place-items:center;padding:28px;text-align:center;font-size:clamp(24px,4vw,42px);font-weight:750;border-radius:22px;background:linear-gradient(130deg,rgba(76,119,238,.2),rgba(120,208,199,.18));border:1px solid var(--line);cursor:pointer}.game-question{margin:15px 0;display:grid;gap:7px}.game-answer{padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--text);max-width:440px;width:100%}
+@media(max-width:640px){.pres-layout{gap:8px;grid-template-columns:1fr 35%;align-items:center}.pres-photo{border-radius:10px;max-height:160px}.pres-slide h3{font-size:clamp(13px,4vw,24px)}.pres-bullets{font-size:clamp(8px,2.1vw,12px)}#wallpaperMode{max-width:98px}}
+@media(prefers-reduced-motion:reduce){body::before,body::after{animation:none}}
 </style>
 </head>
 <body>
@@ -246,9 +259,9 @@
         <button class="icon-btn menu-btn" aria-label="Open menu" onclick="toggleMenu(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
         <div class="crumb"><span data-i18n="workspace">Workspace</span> / <b id="crumbTitle" data-i18n="home">Home</b></div>
       </div>
-      <div class="top-actions">
+      <div class="top-actions"><select class="lang-btn" id="wallpaperMode" aria-label="Live wallpaper" title="Live wallpaper" onchange="setWallpaper(this.value)"><option value="aurora">🌌 Aurora</option><option value="orbs">🫧 Orbs</option><option value="mesh">🌊 Flow</option><option value="still">◻ Still</option></select>
         <select class="lang-btn" id="language" aria-label="Language" onchange="setLanguage(this.value)">
-          <option value="uz">🇺🇿 UZB</option><option value="ru">🇷🇺 RU</option><option value="en">🇬🇧 ENG</option>
+          <option value="uz">🇺🇿 UZB</option><option value="ru">🇷🇺 RUS</option><option value="en">🇬🇧 ENG</option>
         </select>
         <button class="icon-btn" onclick="toggleTheme()" aria-label="Change theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg></button>
       </div>
@@ -259,7 +272,7 @@
       <div class="eyebrow"><span class="spark">✦</span><span data-i18n="heroEyebrow">AI POWERED PRESENTATIONS</span></div>
       <h1 data-i18n="heroTitle">G‘oyalaringizni ajoyib taqdimotga aylantiring.</h1>
       <p data-i18n="heroDesc">Mavzuni yozing — sun’iy intellekt siz uchun mazmun, slaydlar tartibi va professional dizaynni tayyorlaydi.</p>
-      <div class="hero-chips"><span class="chip">✦ AI presentation</span><span class="chip">Shablonlar</span><span class="chip">UZ · RU · EN</span></div>
+      <div class="hero-chips"><span class="chip">✦ AI presentation</span><span class="chip">Shablonlar</span><span class="chip">UZB · RUS · ENG</span></div>
     </section>
 
     <div class="section-head" id="create">
@@ -273,7 +286,7 @@
         <textarea class="topic-input" id="topic" data-placeholder="topicPlaceholder" placeholder="Masalan: O‘zbekiston iqtisodiyotining rivojlanishi..."></textarea>
         <div class="field-row">
           <div><label class="field-label" data-i18n="languageLabel">Prezentatsiya tili</label>
-            <div class="lang-options"><button class="lang-option selected" data-presentation-lang="uz">🇺🇿 UZB</button><button class="lang-option" data-presentation-lang="ru">🇷🇺 RU</button><button class="lang-option" data-presentation-lang="en">🇬🇧 ENG</button></div>
+            <div class="lang-options"><button class="lang-option selected" data-presentation-lang="uz">🇺🇿 UZB</button><button class="lang-option" data-presentation-lang="ru">🇷🇺 RUS</button><button class="lang-option" data-presentation-lang="en">🇬🇧 ENG</button></div>
           </div>
           <div><label class="field-label" for="slideCount" data-i18n="slideCount">Slaydlar soni</label>
             <select id="slideCount"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>30</option></select>
@@ -316,7 +329,7 @@
     </div>
     <div id="pagesHost"></div>
     <div class="footer-note">Slide Maker AI · Liquid Glass interface · UZ / RU / EN</div>
-  </main>
+  <section class="page" id="p-games"><div class="section-head"><div><h2 id="gameHeading">O‘yinlar</h2><p>Interaktiv o‘quv mashqlari</p></div></div><div class="glass-card" style="padding:24px"><div class="field-row"><div><label class="field-label">Mavzu / Topic</label><input id="gameTopic" class="topic-input" style="min-height:46px;height:46px" value="English vocabulary" placeholder="Mavzu kiriting"></div><div><label class="field-label">O‘yin</label><select id="gameType"><option value="flash">Flashcards</option><option value="crossword">Krossvord</option><option value="listen">Listening</option></select></div></div><button class="primary-btn" onclick="startGame()">✦ Boshlash / Start</button><div id="gameResult" class="game-result"></div></div></section></main>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -376,16 +389,44 @@
     const subtitle=slide.subtitle?'<p class="pres-subtitle">'+slideEsc(slide.subtitle)+'</p>':"";
     const bulletHtml=bullets.length?'<ul class="pres-bullets">'+bullets.map(b=>'<li>'+slideEsc(b)+'</li>').join("")+'</ul>':"";
     const notes=slide.speakerNotes?'<details class="pres-notes"><summary>Ma’ruzachi uchun izoh</summary><p>'+slideEsc(slide.speakerNotes)+'</p></details>':"";
-    viewer.innerHTML='<div class="pres-top"><div><small>AI PRESENTATION</small><h2>'+slideEsc(currentPresentation.title||"Prezentatsiya")+'</h2></div><div class="pres-actions"><button class="btn2" onclick="downloadPresentationJSON()">JSON ↓</button><button class="btn2" onclick="printPresentation()">PDF / Chop etish</button></div></div>'+
-      '<div class="pres-stage"><div class="pres-slide pres-theme-'+(activeSlide%4)+'"><div class="pres-decor">✦</div><div class="pres-index">SLIDE '+String(activeSlide+1).padStart(2,"0")+' / '+slides.length+'</div><h3>'+title+'</h3>'+subtitle+bulletHtml+'<div class="pres-footer">SLIDE MAKER AI <span>'+slideEsc(slide.layout||"presentation")+'</span></div></div></div>'+
+    viewer.innerHTML='<div class="pres-top"><div><h2>'+slideEsc(currentPresentation.title||"Prezentatsiya")+'</h2></div><div class="pres-actions"><button class="btn2" onclick="downloadPresentationJSON()">JSON ↓</button><button class="btn2" onclick="printPresentation()">PDF / Chop etish</button></div></div>'+
+      '<div class="pres-stage"><div class="pres-slide pres-theme-'+(activeSlide%4)+'"><div class="pres-decor">✦</div><div class="pres-index">'+String(activeSlide+1).padStart(2,"0")+' / '+slides.length+'</div><div class="pres-layout"><div class="pres-content"><h3>'+title+'</h3>'+subtitle+bulletHtml+'</div>'+slideImage(slide,activeSlide)+'</div></div></div>'+
       notes+'<div class="pres-controls"><button class="btn2" onclick="changeSlide(-1)" '+(activeSlide===0?"disabled":"")+'>← Oldingi</button><span>'+(activeSlide+1)+' / '+slides.length+'</span><button class="btn2" onclick="changeSlide(1)" '+(activeSlide===slides.length-1?"disabled":"")+'>Keyingi →</button></div>'+
       '<div class="pres-thumbs">'+slides.map((s,i)=>'<button class="pres-thumb '+(i===activeSlide?"selected":"")+'" onclick="jumpSlide('+i+')"><b>'+(i+1)+'</b><span>'+slideEsc(s.title||"Slayd")+'</span></button>').join("")+'</div>';
   }
   function changeSlide(delta){jumpSlide(activeSlide+delta)}
   function jumpSlide(index){if(!currentPresentation||index<0||index>=currentPresentation.slides.length)return;activeSlide=index;renderPresentation()}
   function downloadPresentationJSON(){if(!currentPresentation)return;const blob=new Blob([JSON.stringify(currentPresentation,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="slide-maker-presentation.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-  function printPresentation(){if(!currentPresentation)return;const slides=currentPresentation.slides;const style='@page{size:landscape;margin:0}body{margin:0;font-family:Arial,sans-serif;color:#16284b}section{box-sizing:border-box;width:100vw;height:100vh;padding:7%;page-break-after:always;break-after:page;background:linear-gradient(125deg,#f0f5ff,#fff)}section:nth-child(even){background:linear-gradient(125deg,#142647,#283d73);color:white}h1{font-size:42px;margin:12px 0 28px}p,li{font-size:24px;line-height:1.5}li{margin:12px 0}small{letter-spacing:3px;color:#5a83d7}section:nth-child(even) small{color:#a9c3ff}';const html='<!doctype html><html><head><meta charset="utf-8"><title>Slide Maker AI</title><style>'+style+'</style></head><body>'+slides.map((s,i)=>'<section><small>SLIDE '+(i+1)+' / '+slides.length+'</small><h1>'+slideEsc(s.title||"")+'</h1>'+(s.subtitle?'<p>'+slideEsc(s.subtitle)+'</p>':"")+'<ul>'+(Array.isArray(s.bullets)?s.bullets:[]).map(b=>'<li>'+slideEsc(b)+'</li>').join("")+'</ul></section>').join("")+'</body></html>';const blob=new Blob([html],{type:"text/html"});const url=URL.createObjectURL(blob);const win=window.open(url,"_blank");if(!win){showToast("Brauzer pop-up oynasiga ruxsat bering.");URL.revokeObjectURL(url);return}setTimeout(()=>{try{win.print()}catch(e){}},900);setTimeout(()=>URL.revokeObjectURL(url),60000)}
+  function printPresentation(){if(!currentPresentation)return;const slides=currentPresentation.slides;const style='@page{size:landscape;margin:0}body{margin:0;font-family:Arial,sans-serif;color:#16284b}section{box-sizing:border-box;width:100vw;height:100vh;padding:7%;page-break-after:always;break-after:page;background:linear-gradient(125deg,#f0f5ff,#fff)}section:nth-child(even){background:linear-gradient(125deg,#142647,#283d73);color:white}h1{font-size:42px;margin:12px 0 28px}p,li{font-size:24px;line-height:1.5}li{margin:12px 0}small{letter-spacing:3px;color:#5a83d7}section:nth-child(even) small{color:#a9c3ff}';const html='<!doctype html><html><head><meta charset="utf-8"><title>Slide Maker AI</title><style>'+style+'</style></head><body>'+slides.map((s,i)=>'<section><small>SLIDE '+(i+1)+' / '+slides.length+'</small><h1>'+slideEsc(s.title||"")+'</h1>'+(s.subtitle?'<p>'+slideEsc(s.subtitle)+'</p>':"")+'<ul>'+(Array.isArray(s.bullets)?s.bullets:[]).map(b=>'<li>'+slideEsc(b)+'</li>').join("")+'</ul>'+(slidePhoto(s,i)?'<img src="'+slidePhoto(s,i)+'" style="width:36%;height:37vh;object-fit:cover;border-radius:18px">':'')+'</section>').join("")+'</body></html>';const blob=new Blob([html],{type:"text/html"});const url=URL.createObjectURL(blob);const win=window.open(url,"_blank");if(!win){showToast("Brauzer pop-up oynasiga ruxsat bering.");URL.revokeObjectURL(url);return}setTimeout(()=>{try{win.print()}catch(e){}},900);setTimeout(()=>URL.revokeObjectURL(url),60000)}
 
+  // Curated royalty-free Unsplash image URLs; category selection is heuristic, not AI image generation.
+  const PHOTO_SETS={
+    education:["photo-1503676260728-1c00da094a0b","photo-1523050854058-8df90110c9f1"],
+    technology:["photo-1518770660439-4636190af475","photo-1451187580459-43490279c0fa"],
+    business:["photo-1460925895917-afdab827c52f","photo-1497366811353-6870744d04b2"],
+    nature:["photo-1441974231531-c6227db76b6e","photo-1470071459604-3b5ec3a7fe05"],
+    science:["photo-1532094349884-543bc11b234d","photo-1532187863486-abf9dbad1b69"],
+    general:["photo-1497366754035-f200968a6e72","photo-1516321318423-f06f85e504b3"]
+  };
+  function slidePhoto(slide,index){
+    const q=((slide.imageQuery||"")+" "+(slide.title||"")+" "+(currentPresentation?.title||"")).toLowerCase();
+    const cat=/school|student|educat|univers|talaba|ta.lim|maktab|учеб|образован/.test(q)?"education":/nature|forest|eco|tabiat|environment|природ/.test(q)?"nature":/technology|digital|computer|ai |sun.iy|tech|robot|технолог/.test(q)?"technology":/business|econom|finance|iqtisod|biznes|бизнес|эконом/.test(q)?"business":/science|research|ilm|biology|physics|наук/.test(q)?"science":"general";
+    const photo=PHOTO_SETS[cat][index%PHOTO_SETS[cat].length];
+    return "https://images.unsplash.com/"+photo+"?auto=format&fit=crop&w=1100&q=80";
+  }
+  function slideImage(slide,index){return '<figure class="pres-photo"><img src="'+slidePhoto(slide,index)+'" alt="'+slideEsc(slide.imageQuery||slide.title||"Slide image")+'" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></figure>'}
+  function setWallpaper(mode){document.documentElement.dataset.wallpaper=mode;try{localStorage.setItem("sm_wallpaper",mode)}catch(e){}}
+  try{const mode=localStorage.getItem("sm_wallpaper")||"aurora";document.getElementById("wallpaperMode").value=mode;setWallpaper(mode)}catch(e){}
+  const GAME_CARDS=[{q:"Innovation",a:"Yangilik / New idea"},{q:"Education",a:"Ta’lim / Learning"},{q:"Research",a:"Tadqiqot / Investigation"},{q:"Knowledge",a:"Bilim / Understanding"},{q:"Development",a:"Rivojlanish / Growth"},{q:"Opportunity",a:"Imkoniyat / Chance"}];
+  let gameCards=GAME_CARDS,gameIndex=0,gameRevealed=false;
+  function startGame(){const type=document.getElementById("gameType").value;gameIndex=0;gameRevealed=false;const topic=document.getElementById("gameTopic").value.trim();const out=document.getElementById("gameResult");if(type==="flash"){out.innerHTML='<p class="card-sub">'+slideEsc(topic||"Vocabulary")+' · '+gameCards.length+' cards</p><div class="flash-card" onclick="flipCard()" id="flashCard"></div><div class="pres-controls"><button class="btn2" onclick="gameNext(-1)">←</button><span id="gameNum"></span><button class="btn2" onclick="gameNext(1)">→</button></div>';drawCard()}else if(type==="crossword"){const words=[{a:"LEARN",q:"To gain knowledge"},{a:"IDEA",q:"A new thought"},{a:"BOOK",q:"You read it"},{a:"STUDY",q:"To learn a subject"}];out.innerHTML='<h3>Mini crossword — clues</h3><p class="card-sub">Javoblarni inglizcha yozing.</p>'+words.map((w,i)=>'<div class="game-question"><label>'+(i+1)+'. '+w.q+' ('+w.a.length+' letters)</label><input data-answer="'+w.a+'" class="game-answer" maxlength="'+w.a.length+'" placeholder="'+"□ ".repeat(w.a.length)+'"></div>').join('')+'<button class="btn2" onclick="checkCrossword()">Tekshirish / Check</button><p id="crossResult"></p>'}else{out.innerHTML='<h3>Listening practice</h3><p>So‘zni tinglang va yozing.</p><button class="btn2" onclick="speakGame()">🔊 Eshitish / Listen</button><div class="game-question"><input id="listenAnswer" class="game-answer" placeholder="What did you hear?"></div><button class="btn2" onclick="checkListen()">Tekshirish / Check</button><p id="listenResult"></p>';}}
+  function drawCard(){const c=gameCards[gameIndex];document.getElementById("flashCard").textContent=gameRevealed?c.a:c.q;document.getElementById("gameNum").textContent=(gameIndex+1)+" / "+gameCards.length}
+  function flipCard(){gameRevealed=!gameRevealed;drawCard()}
+  function gameNext(delta){gameIndex=(gameIndex+delta+gameCards.length)%gameCards.length;gameRevealed=false;drawCard()}
+  function checkCrossword(){const els=[...document.querySelectorAll(".game-answer[data-answer]")];const ok=els.filter(e=>e.value.trim().toUpperCase()===e.dataset.answer).length;document.getElementById("crossResult").textContent=ok+" / "+els.length+" correct"}
+  function speakGame(){if(!("speechSynthesis" in window)){showToast("Speech synthesis unavailable");return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(gameCards[gameIndex].q);u.lang="en-US";speechSynthesis.speak(u)}
+  function checkListen(){const answer=document.getElementById("listenAnswer").value.trim().toLowerCase();const correct=gameCards[gameIndex].q.toLowerCase();document.getElementById("listenResult").innerHTML=answer===correct?'✅ Correct! <button class="btn2" onclick="gameNextListen()">Next →</button>':'Try again';}
+  function gameNextListen(){gameIndex=(gameIndex+1)%gameCards.length;document.getElementById("listenAnswer").value="";document.getElementById("listenResult").textContent="";}
   function chooseTemplate(name){document.getElementById("topic").focus();showToast(name+" shabloni tanlandi. Mavzuni kiriting.");}
   function filterTemplates(){
     const q=document.getElementById("templateSearch").value.toLowerCase(),cat=document.getElementById("categoryFilter").value;
@@ -398,7 +439,7 @@
   const esc=x=>String(x==null?"":x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const IC={essay:'<path d="M4 20h4l11-11-4-4L4 16zM13 7l4 4"/>',article:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',indep:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',glossary:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM8 7h7"/>',translator:'<path d="M4 5h9M8 3v2M6 11c2 0 4-2 5-6M7 9c1 2 3 4 5 5M12 21l4-9 4 9M13.5 18h5"/>',crossword:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',flash:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>',listen:'<path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a1 1 0 0 1-1-1zM20 14h-3v6h2a1 1 0 0 0 1-1z"/>'};
   const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';
-  const READY=new Set(["essay","article","indep","glossary","translator"]),GROUPS=[["navDocs",["essay","article","indep","glossary","translator"]],["navGames",["crossword","flash","listen"]]];
+  const READY=new Set(["essay","article","indep","glossary","translator","crossword","flash","listen"]),GROUPS=[["navDocs",["essay","article","indep","glossary","translator"]],["navGames",["crossword","flash","listen"]]];
   $("dynNav").innerHTML=GROUPS.map(([g,ps])=>'<div class="nav-label" data-i18n="'+g+'"></div><nav class="nav">'+ps.map(p=>'<button data-go="'+p+'" class="'+(READY.has(p)?"":"dim")+'">'+svg(p)+'<span data-i18n="n_'+p+'"></span>'+(READY.has(p)?"":'<em class="soon" data-i18n="soon"></em>')+'</button>').join("")+"</nav>").join("");
   const DL={uz:{subject:"Fan",topic:"Mavzu",by:"Bajardi",group:"Guruh",chk:"Tekshirdi",plan:"Reja",refs:"Foydalanilgan adabiyotlar",refsNote:"(Manbalarni shu yerga o‘zingiz qo‘shing)",abs:"Annotatsiya",kw:"Kalit so‘zlar",term:"Atama",def:"Ta’rif"},ru:{subject:"Предмет",topic:"Тема",by:"Выполнил(а)",group:"Группа",chk:"Проверил(а)",plan:"План",refs:"Список литературы",refsNote:"(Добавьте источники самостоятельно)",abs:"Аннотация",kw:"Ключевые слова",term:"Термин",def:"Определение"},en:{subject:"Subject",topic:"Topic",by:"Prepared by",group:"Group",chk:"Checked by",plan:"Plan",refs:"References",refsNote:"(Add your sources here)",abs:"Abstract",kw:"Keywords",term:"Term",def:"Definition"}};
   const DOCS={
@@ -410,10 +451,11 @@
   function go(p,scroll){
     if(p!=="home"&&!READY.has(p)){showToast(tr("soonMsg"));return}
     document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+    if(["crossword","flash","listen"].includes(p)){document.getElementById("gameType").value=p;document.getElementById("gameHeading").textContent=tr("n_"+p);p="games";startGame()}
     if(p!=="home"&&!$("p-"+p))build(p);
     $("p-"+p).classList.add("active");
     const act=scroll||p;document.querySelectorAll("[data-nav],[data-go]").forEach(b=>b.classList.toggle("active",(b.dataset.go||b.dataset.nav)===act));
-    const key=p==="home"?"home":"n_"+p;$("crumbTitle").dataset.i18n=key;$("crumbTitle").textContent=tr(key);
+    const key=p==="home"?"home":p==="games"?"navGames":"n_"+p;$("crumbTitle").dataset.i18n=key;$("crumbTitle").textContent=tr(key);
     scroll&&$(scroll)?$(scroll).scrollIntoView():window.scrollTo({top:0});toggleMenu(false);history.replaceState(null,"","#"+p);
   }
   document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.nav;if(t==="templates"||t==="create")go("home",t);else if(t==="mine")showToast(tr("soonMsg"));else go("home")}));
