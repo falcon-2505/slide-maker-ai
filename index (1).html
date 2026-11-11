@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef3ff">
+  <title>Slide Maker AI</title>
+  <style>
+    :root{
+      --bg:#eef3ff;--bg2:#f8faff;--panel:rgba(255,255,255,.66);--panel-strong:rgba(255,255,255,.88);
+      --line:rgba(93,120,177,.18);--text:#17233d;--muted:#71809e;--blue:#4778ed;--blue2:#6c8ff5;
+      --shadow:0 18px 55px rgba(55,83,145,.11);--sidebar:290px;--radius:22px;
+    }
+    [data-theme="dark"]{
+      --bg:#0c1426;--bg2:#111d34;--panel:rgba(24,38,64,.72);--panel-strong:rgba(27,43,72,.94);
+      --line:rgba(157,180,230,.16);--text:#edf3ff;--muted:#9aabc9;--blue:#7899ff;--blue2:#9ab0ff;
+      --shadow:0 18px 55px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);
+      background:radial-gradient(ellipse at 8% 4%,rgba(124,165,255,.28),transparent 34%),
+      radial-gradient(ellipse at 92% 15%,rgba(181,153,255,.20),transparent 30%),
+      linear-gradient(135deg,var(--bg),var(--bg2));background-attachment:fixed}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .app{min-height:100vh;display:flex}
+    .sidebar{width:var(--sidebar);position:fixed;inset:14px auto 14px 14px;z-index:20;padding:18px 14px;
+      border:1px solid var(--line);border-radius:26px;background:var(--panel);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .28s ease}
+    .brand{display:flex;align-items:center;gap:11px;padding:5px 8px 23px;font-size:19px;font-weight:800;letter-spacing:-.5px}
+    .brand-mark{width:39px;height:39px;border-radius:13px;display:grid;place-items:center;color:white;
+      background:linear-gradient(145deg,#4778ed,#8b7cf6);box-shadow:0 8px 20px #527be744}
+    .brand-mark svg{width:21px;height:21px}
+    .nav-label{font-size:10px;letter-spacing:1.3px;font-weight:800;color:var(--muted);padding:17px 12px 8px}
+    .nav{display:grid;gap:5px}
+    .nav button{border:0;background:transparent;color:var(--text);width:100%;display:flex;align-items:center;gap:13px;
+      padding:12px 13px;border-radius:13px;text-align:left;font-size:14px;transition:.2s}
+    .nav button:hover,.nav button.active{background:rgba(93,137,241,.13)}
+    .nav button.active{box-shadow:inset 3px 0 #527cf0;font-weight:700}
+    .nav svg{width:19px;height:19px;color:var(--blue);flex:none}
+    .sidebar-bottom{margin-top:auto}
+    .profile{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel-strong)}
+    .avatar{width:36px;height:36px;border-radius:12px;background:rgba(85,127,235,.13);display:grid;place-items:center;color:var(--blue)}
+    .profile strong{font-size:13px;display:block}.profile small{font-size:11px;color:var(--muted)}
+    .main{margin-left:calc(var(--sidebar) + 28px);width:calc(100% - var(--sidebar) - 42px);padding:24px 30px 50px;max-width:1700px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:27px}
+    .crumb{font-size:13px;color:var(--muted)}.crumb b{color:var(--text)}
+    .top-actions{display:flex;align-items:center;gap:9px}
+    .icon-btn,.lang-btn{height:40px;border:1px solid var(--line);border-radius:13px;background:var(--panel);color:var(--text);backdrop-filter:blur(15px)}
+    .icon-btn{width:42px;display:grid;place-items:center}.icon-btn svg{width:18px}
+    .lang-btn{padding:0 12px;font-size:12px;font-weight:700}
+    .menu-btn{display:none}
+    .hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:28px;padding:34px;
+      background:linear-gradient(115deg,rgba(255,255,255,.78),rgba(230,238,255,.53));backdrop-filter:blur(22px);box-shadow:var(--shadow)}
+    [data-theme="dark"] .hero{background:linear-gradient(115deg,rgba(30,47,80,.9),rgba(31,43,73,.62))}
+    .hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-90px;top:-150px;
+      background:radial-gradient(circle,rgba(111,145,255,.28),rgba(111,145,255,0));pointer-events:none}
+    .eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--blue);font-size:11px;font-weight:800;letter-spacing:1.1px;text-transform:uppercase}
+    .spark{font-size:16px}
+    h1{font-size:clamp(29px,4vw,46px);line-height:1.12;letter-spacing:-1.7px;margin:13px 0 11px;max-width:680px}
+    .hero p{color:var(--muted);font-size:14px;line-height:1.7;max-width:600px;margin:0}
+    .hero-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+    .chip{font-size:11px;padding:8px 11px;border-radius:99px;background:rgba(91,132,235,.10);border:1px solid rgba(91,132,235,.12);color:var(--text)}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:31px 0 15px}
+    .section-head h2{font-size:18px;letter-spacing:-.4px;margin:0 0 5px}.section-head p{margin:0;color:var(--muted);font-size:12px}
+    .text-link{border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:700}
+    .workspace{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:17px}
+    .glass-card{border:1px solid var(--line);border-radius:22px;background:var(--panel);backdrop-filter:blur(20px);box-shadow:var(--shadow)}
+    .generator{padding:21px}
+    .card-title{font-size:15px;font-weight:800;margin:0 0 5px}.card-sub{font-size:12px;color:var(--muted);margin:0 0 18px}
+    .field-label{display:block;font-size:12px;font-weight:700;margin:15px 0 8px}
+    .topic-input{width:100%;min-height:102px;resize:vertical;border:1px solid var(--line);border-radius:15px;padding:14px 15px;
+      background:var(--panel-strong);color:var(--text);outline:none;font-size:13px;line-height:1.5}
+    .topic-input:focus,.search:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(71,120,237,.12)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+    select,.select-like{width:100%;height:43px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel-strong);color:var(--text);outline:none;font-size:12px}
+    .lang-options{display:flex;gap:7px}.lang-option{flex:1;border:1px solid var(--line);border-radius:11px;background:var(--panel-strong);padding:10px 5px;font-size:11px;color:var(--text)}
+    .lang-option.selected{border-color:var(--blue);background:rgba(71,120,237,.13);color:var(--blue);font-weight:800}
+    .primary-btn{width:100%;border:0;border-radius:13px;padding:14px 16px;margin-top:19px;color:#fff;font-weight:800;font-size:13px;
+      background:linear-gradient(110deg,#4778ed,#786ef0);box-shadow:0 10px 22px rgba(74,112,225,.25);transition:transform .2s,filter .2s}
+    .primary-btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+    .ai-note{display:flex;align-items:center;gap:7px;margin-top:11px;color:var(--muted);font-size:10px}
+    .ai-note svg{width:14px;color:var(--blue)}
+    .quick-card{padding:21px;display:flex;flex-direction:column}
+    .quick-visual{flex:1;min-height:150px;border-radius:16px;margin:8px 0 15px;overflow:hidden;position:relative;
+      background:linear-gradient(135deg,#263b74,#637feb 58%,#b2c2ff)}
+    .quick-visual:before,.quick-visual:after{content:"";position:absolute;border:1px solid #ffffff55;border-radius:50%}
+    .quick-visual:before{width:190px;height:190px;right:-35px;top:-65px}.quick-visual:after{width:120px;height:120px;right:40px;bottom:-75px}
+    .slide-mini{position:absolute;left:20px;top:23px;width:67%;height:108px;border-radius:8px;background:#ffffffed;padding:13px;color:#24365f;box-shadow:0 12px 25px #172a5b44;transform:rotate(-4deg)}
+    .slide-mini small{font-size:7px;color:#6580c4;font-weight:800;letter-spacing:1px}.slide-mini b{display:block;font-size:15px;line-height:1.1;margin-top:9px;max-width:130px}
+    .slide-mini span{display:block;width:52%;height:4px;border-radius:5px;background:#c5d3fa;margin-top:8px}
+    .quick-stat{display:flex;justify-content:space-between;align-items:center;font-size:12px}.quick-stat strong{font-size:18px}
+    .templates-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .template-card{overflow:hidden;border:1px solid var(--line);border-radius:17px;background:var(--panel);transition:.22s;cursor:pointer}
+    .template-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:rgba(91,132,235,.45)}
+    .template-thumb{height:132px;position:relative;overflow:hidden;padding:13px;display:flex;align-items:center;justify-content:center}
+    .template-thumb .paper{width:85%;height:100%;border-radius:5px;padding:13px;box-shadow:0 8px 20px #18274b22;position:relative;overflow:hidden}
+    .paper small{font-size:7px;letter-spacing:1px;font-weight:800;opacity:.7}.paper b{display:block;font-size:15px;line-height:1.05;margin-top:12px;max-width:130px}
+    .paper i{display:block;width:55%;height:4px;border-radius:4px;margin-top:9px;opacity:.45}
+    .paper .shape{position:absolute;width:70px;height:70px;border-radius:50%;right:-14px;bottom:-18px;opacity:.35}
+    .thumb-blue{background:linear-gradient(135deg,#dce8ff,#a8c0ff)}.thumb-blue .paper{background:#233f80;color:white}.thumb-blue i{background:#fff}.thumb-blue .shape{background:#9eb8ff}
+    .thumb-cream{background:linear-gradient(135deg,#f7eddb,#e7d5b8)}.thumb-cream .paper{background:#fffaf0;color:#58442e}.thumb-cream i{background:#9e8058}.thumb-cream .shape{background:#d6b77e}
+    .thumb-dark{background:linear-gradient(135deg,#252b43,#59627e)}.thumb-dark .paper{background:#151b2c;color:#fff}.thumb-dark i{background:#91a9ff}.thumb-dark .shape{background:#7387f8}
+    .thumb-green{background:linear-gradient(135deg,#dcefe7,#a7d5c0)}.thumb-green .paper{background:#f5fff9;color:#245747}.thumb-green i{background:#4c9d7c}.thumb-green .shape{background:#8ac9aa}
+    .thumb-pink{background:linear-gradient(135deg,#ffe1ed,#e9b8d0)}.thumb-pink .paper{background:#fff7fb;color:#733c60}.thumb-pink i{background:#c477a1}.thumb-pink .shape{background:#e6a4c8}
+    .thumb-orange{background:linear-gradient(135deg,#ffead7,#f6c39b)}.thumb-orange .paper{background:#fff9f2;color:#814923}.thumb-orange i{background:#d58a50}.thumb-orange .shape{background:#f3ae70}
+    .template-info{padding:12px 13px}.template-info b{font-size:12px;display:block}.template-info span{font-size:10px;color:var(--muted);display:block;margin-top:4px}
+    .template-tag{position:absolute;right:9px;top:9px;padding:5px 7px;border-radius:8px;background:#ffffffd9;color:#3458ad;font-size:9px;font-weight:800}
+    .template-toolbar{display:flex;gap:10px;align-items:center}
+    .search-wrap{position:relative;flex:1;max-width:280px}.search{height:39px;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);padding:0 12px 0 35px;outline:none;font-size:11px}
+    .search-wrap svg{position:absolute;left:11px;top:12px;width:15px;color:var(--muted)}
+    .filter{height:39px;border:1px solid var(--line);border-radius:12px;padding:0 11px;background:var(--panel);color:var(--text);font-size:11px}
+    .template-count{font-size:11px;color:var(--muted);white-space:nowrap}
+    .footer-note{margin-top:25px;text-align:center;color:var(--muted);font-size:10px}
+    .overlay{display:none;position:fixed;inset:0;background:#101a2d66;z-index:15}
+    .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:12px 17px;border-radius:13px;background:#1d2c4c;color:#fff;font-size:12px;box-shadow:var(--shadow);transition:.25s;z-index:50}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(max-width:1100px){.templates-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.main{padding:22px 22px 40px}}
+    @media(max-width:800px){
+      .sidebar{transform:translateX(calc(-100% - 25px));inset:10px auto 10px 10px;width:min(290px,calc(100vw - 55px))}
+      .sidebar.open{transform:translateX(0)}.overlay.show{display:block}
+      .main{margin-left:0;width:100%;padding:15px 15px 35px}
+      .menu-btn{display:grid}.topbar{margin-bottom:17px}.hero{padding:25px 22px;border-radius:23px}
+      .workspace{grid-template-columns:1fr}.quick-card{min-height:270px}.templates-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+      .template-thumb{height:118px}.section-head{margin-top:25px}
+    }
+    @media(max-width:430px){
+      .hero{padding:22px 18px}h1{font-size:30px}.field-row{grid-template-columns:1fr}.top-actions{gap:6px}
+      .lang-btn{padding:0 9px}.templates-grid{gap:8px}.template-thumb{height:105px;padding:9px}
+      .template-info{padding:10px}.template-info b{font-size:11px}
+      .section-head{align-items:flex-start;flex-direction:column}.template-toolbar{width:100%}.search-wrap{max-width:none;flex:1}
+    }
+    .nav-scroll{overflow-y:auto;flex:1;min-height:0;margin:0 -6px;padding:0 6px}.nav-scroll::-webkit-scrollbar{width:0}
+    .nav button .soon{margin-left:auto;font-size:9px;font-style:normal;padding:2px 7px;border-radius:8px;background:rgba(120,140,190,.2);color:var(--muted);font-weight:700}
+    .nav button.dim{opacity:.62}
+    .page{display:none}.page.active{display:block;animation:fadeUp .35s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}}
+    .phero{display:flex;align-items:center;gap:16px;padding:22px 24px;margin-bottom:17px}
+    .pico{width:54px;height:54px;border-radius:17px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#4778ed,#8b7cf6);box-shadow:0 10px 24px #527be744;flex:none}.pico svg{width:26px}
+    .phero h1{font-size:clamp(22px,3vw,30px);margin:0 0 4px;letter-spacing:-.8px}.phero p{margin:0;color:var(--muted);font-size:13px;line-height:1.55;max-width:640px}
+    .tool{display:grid;grid-template-columns:minmax(290px,.8fr) minmax(0,1.5fr);gap:17px;align-items:start}
+    .tool .generator{position:sticky;top:18px}.tool .wide{grid-column:1/-1;position:static}
+    .result{padding:22px;min-height:340px}
+    .rbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px}.rbar .meta{font-size:11px;color:var(--muted);margin-right:auto}
+    .btn2{height:36px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:var(--panel-strong);color:var(--text);font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+    .btn2:hover{border-color:var(--blue);color:var(--blue)}
+    .doc{background:var(--panel-strong);border:1px solid var(--line);border-radius:16px;padding:30px 34px;font-family:Georgia,"Times New Roman",serif;line-height:1.75;font-size:15px;outline:none}
+    .doc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(71,120,237,.12)}
+    .doc h1{font-family:inherit;font-size:24px;text-align:center;margin:0 0 18px;max-width:none;letter-spacing:-.3px}
+    .doc h2{font-family:Inter,system-ui,sans-serif;font-size:17px;margin:24px 0 8px}
+    .doc p{margin:0 0 10px;text-align:justify}.doc .note{color:var(--muted);font-style:italic;font-size:13px;text-align:left}.doc .kw{color:var(--muted);font-size:13px;text-align:left}
+    .doc .tp{text-align:center;padding:46px 0 56px;border-bottom:2px dashed var(--line);margin-bottom:30px;line-height:2.1}.doc .tp .u{font-weight:700;text-transform:uppercase}
+    .doc ol{padding-left:22px}
+    .doc table{width:100%;border-collapse:collapse;font-family:Inter,system-ui,sans-serif;font-size:13px}.doc td,.doc th{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}.doc th{background:rgba(71,120,237,.12)}
+    .skel{display:grid;gap:11px;padding:8px 0}.skel i{height:13px;border-radius:7px;background:linear-gradient(90deg,rgba(120,140,190,.12),rgba(120,140,190,.28),rgba(120,140,190,.12));background-size:200% 100%;animation:shim 1.3s infinite}
+    @keyframes shim{to{background-position:-200% 0}}
+    .empty{display:grid;place-items:center;text-align:center;color:var(--muted);gap:8px;padding:70px 20px;font-size:13px}.empty b{font-size:36px}
+    .err{border:1px solid #e0556b55;background:#e0556b14;border-radius:14px;padding:14px;font-size:13px;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .txt{width:100%;height:43px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--panel-strong);color:var(--text);outline:none;font-size:12px}.txt:focus{border-color:var(--blue)}
+    .primary-btn:disabled{opacity:.6;cursor:progress;transform:none}
+    .trgrid{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end}
+    .trbox{width:100%;min-height:250px;resize:vertical;border:1px solid var(--line);border-radius:15px;padding:14px;background:var(--panel-strong);color:var(--text);font-size:14px;line-height:1.6;outline:none}.trbox:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(71,120,237,.12)}
+    @media(max-width:1000px){.tool{grid-template-columns:1fr}.tool .generator{position:static}}
+    @media(max-width:640px){.doc{padding:20px 16px}.phero{padding:18px}.trgrid{grid-template-columns:1fr}.trgrid .icon-btn{justify-self:center}}
+    @media print{body *{visibility:hidden}.doc,.doc *{visibility:visible}.doc{position:absolute;left:0;top:0;width:100%;border:0;background:#fff;color:#000;padding:0}}
+
+    /* Mobile usability refinements */
+    html,body{max-width:100%;overflow-x:hidden}
+    .main,.workspace,.tool,.glass-card,.result{min-width:0}
+    .doc{overflow-wrap:anywhere;word-break:normal;overflow-x:auto}
+    .doc table{display:block;max-width:100%;overflow-x:auto}
+    button,select,input,textarea{max-width:100%}
+    @media(max-width:800px){
+      .main{padding:14px 12px 32px}
+      .topbar{position:relative;flex-wrap:wrap}
+      .hero{padding:23px 19px}
+      .workspace,.tool{grid-template-columns:minmax(0,1fr)}
+      .templates-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .template-toolbar{flex-wrap:wrap}
+      .result{padding:15px}
+      .rbar{gap:7px}
+      .rbar .meta{flex-basis:100%}
+    }
+    @media(max-width:430px){
+      .hero h1{font-size:clamp(26px,8vw,34px);letter-spacing:-.8px}
+      .hero p{font-size:13px}
+      .phero{gap:11px;padding:16px}
+      .pico{width:43px;height:43px;border-radius:13px}
+      .generator,.quick-card{padding:16px}
+      .doc{padding:16px 12px;font-size:14px}
+      .doc h1{font-size:21px}
+      .field-row{grid-template-columns:minmax(0,1fr)}
+      .templates-grid{gap:9px}
+      .template-thumb{height:105px}
+      .btn2{padding:0 10px}
+      .trbox{min-height:180px}
+      .crumb{font-size:11px}
+    }
+    @media print{
+      html,body{overflow:visible!important}
+      .doc{overflow:visible!important;display:block!important}
+      .doc table{display:table!important;overflow:visible!important}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="overlay" id="overlay" onclick="toggleMenu(false)"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="14" rx="2"/><path d="M8 21h8M12 17v4M7 13l3-3 2 2 3-4 2 2"/></svg></div>
+      <span>Slide Maker <span style="color:var(--blue)">AI</span></span>
+    </div>
+    <div class="nav-scroll">
+    <nav class="nav">
+      <button class="active" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg><span data-i18n="home">Home</span></button>
+    </nav>
+    <div class="nav-label" data-i18n="slideTools">SLIDE TOOLS</div>
+    <nav class="nav">
+      <button data-nav="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span data-i18n="aiCreate">AI Presentation</span></button>
+      <button data-nav="templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg><span data-i18n="templates">1000+ Templates</span></button>
+      <button data-nav="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg><span data-i18n="mySlides">My Presentations</span></button>
+    </nav>
+    <div id="dynNav"></div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="nav-label" data-i18n="account">ACCOUNT</div>
+      <nav class="nav"><button onclick="showToast('Login oynasi keyingi bosqichda ulanadi')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-i18n="signIn">Sign in / Login</span></button></nav>
+      <div class="profile"><div class="avatar"><svg width="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div><div><strong data-i18n="guest">Guest user</strong><small data-i18n="welcome">Welcome to Slide Maker</small></div></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:11px">
+        <button class="icon-btn menu-btn" aria-label="Open menu" onclick="toggleMenu(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="crumb"><span data-i18n="workspace">Workspace</span> / <b id="crumbTitle" data-i18n="home">Home</b></div>
+      </div>
+      <div class="top-actions">
+        <select class="lang-btn" id="language" aria-label="Language" onchange="setLanguage(this.value)">
+          <option value="uz">🇺🇿 UZB</option><option value="ru">🇷🇺 RU</option><option value="en">🇬🇧 ENG</option>
+        </select>
+        <button class="icon-btn" onclick="toggleTheme()" aria-label="Change theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"/></svg></button>
+      </div>
+    </header>
+
+    <div class="page active" id="p-home">
+    <section class="hero">
+      <div class="eyebrow"><span class="spark">✦</span><span data-i18n="heroEyebrow">AI POWERED PRESENTATIONS</span></div>
+      <h1 data-i18n="heroTitle">G‘oyalaringizni ajoyib taqdimotga aylantiring.</h1>
+      <p data-i18n="heroDesc">Mavzuni yozing — sun’iy intellekt siz uchun mazmun, slaydlar tartibi va professional dizaynni tayyorlaydi.</p>
+      <div class="hero-chips"><span class="chip">✦ AI presentation</span><span class="chip">1000+ templates</span><span class="chip">UZ · RU · EN</span></div>
+    </section>
+
+    <div class="section-head" id="create">
+      <div><h2 data-i18n="createTitle">AI yordamida prezentatsiya yarating</h2><p data-i18n="createDesc">Mavzuni kiriting, qolganini AI bajaradi.</p></div>
+    </div>
+    <section class="workspace">
+      <div class="glass-card generator">
+        <h3 class="card-title" data-i18n="generatorTitle">Yangi prezentatsiya</h3>
+        <p class="card-sub" data-i18n="generatorDesc">Bir necha soniyada g‘oyangizni slaydlarga aylantiring.</p>
+        <label class="field-label" for="topic" data-i18n="topicLabel">Prezentatsiya mavzusi</label>
+        <textarea class="topic-input" id="topic" data-placeholder="topicPlaceholder" placeholder="Masalan: O‘zbekiston iqtisodiyotining rivojlanishi..."></textarea>
+        <div class="field-row">
+          <div><label class="field-label" data-i18n="languageLabel">Prezentatsiya tili</label>
+            <div class="lang-options"><button class="lang-option selected" data-presentation-lang="uz">🇺🇿 UZB</button><button class="lang-option" data-presentation-lang="ru">🇷🇺 RU</button><button class="lang-option" data-presentation-lang="en">🇬🇧 ENG</button></div>
+          </div>
+          <div><label class="field-label" for="slideCount" data-i18n="slideCount">Slaydlar soni</label>
+            <select id="slideCount"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option><option>30</option></select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><label class="field-label" for="audience" data-i18n="audience">Kim uchun?</label><select id="audience"><option data-i18n="students">Talabalar</option><option data-i18n="school">Maktab o‘quvchilari</option><option data-i18n="business">Biznes / Ish</option><option data-i18n="general">Umumiy auditoriya</option></select></div>
+          <div><label class="field-label" for="detail" data-i18n="detail">Ma’lumot darajasi</label><select id="detail"><option data-i18n="balanced">O‘rtacha</option><option data-i18n="simple">Sodda</option><option data-i18n="deep">Batafsil</option></select></div>
+        </div>
+        <button class="primary-btn" onclick="generatePresentation()"><span>✦</span> <span data-i18n="generate">AI bilan prezentatsiya yaratish</span></button>
+        <div class="ai-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/></svg><span data-i18n="aiNote">AI mavzuga mos dizayn, tuzilma va vizual uslubni taklif qiladi.</span></div>
+      </div>
+      <aside class="glass-card quick-card">
+        <h3 class="card-title" data-i18n="smartDesign">Aqlli dizayn tanlovi</h3>
+        <p class="card-sub" data-i18n="smartDesc">Har bir mavzu uchun o‘ziga mos ko‘rinish.</p>
+        <div class="quick-visual"><div class="slide-mini"><small>YOUR NEXT PRESENTATION</small><b>Ideas into impact.</b><span></span><span style="width:35%"></span></div></div>
+        <div class="quick-stat"><span data-i18n="templateLibrary">Shablonlar kutubxonasi</span><strong>1000+</strong></div>
+        <p class="card-sub" style="margin:7px 0 0" data-i18n="smartFoot">AI mavzuingizga mos uslubni tanlashga yordam beradi.</p>
+      </aside>
+    </section>
+
+    <div class="section-head" id="templates">
+      <div><h2 data-i18n="popularTemplates">Mashhur shablonlar</h2><p data-i18n="templateDesc">Boshlash uchun tayyor dizaynlardan birini tanlang.</p></div>
+      <div class="template-toolbar">
+        <div class="search-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input class="search" id="templateSearch" placeholder="Shablon qidirish..." oninput="filterTemplates()"></div>
+        <select class="filter" id="categoryFilter" onchange="filterTemplates()"><option value="all" data-i18n="allCategories">Barchasi</option><option value="academic" data-i18n="academic">Akademik</option><option value="business" data-i18n="businessCat">Biznes</option><option value="creative" data-i18n="creative">Kreativ</option></select>
+      </div>
+    </div>
+    <div class="templates-grid" id="templatesGrid">
+      <article class="template-card" data-name="academic university education ilmiy" data-category="academic" onclick="chooseTemplate('Academic Blue')"><div class="template-thumb thumb-blue"><span class="template-tag">POPULAR</span><div class="paper"><small>ACADEMIC SERIES</small><b>Research & Discovery</b><i></i><i style="width:35%"></i><div class="shape"></div></div></div><div class="template-info"><b>Academic Blue</b><span data-i18n="academicMeta">Akademik · Professional</span></div></article>
+      <article class="template-card" data-name="minimal business beige elegant" data-category="business" onclick="chooseTemplate('Minimal Editorial')"><div class="template-thumb thumb-cream"><div class="paper"><small>THE PRESENTATION</small><b>Less, but better.</b><i></i><i style="width:40%"></i><div class="shape"></div></div></div><div class="template-info"><b>Minimal Editorial</b><span data-i18n="minimalMeta">Minimal · Elegant</span></div></article>
+      <article class="template-card" data-name="dark technology tech future" data-category="creative" onclick="chooseTemplate('Dark Future')"><div class="template-thumb thumb-dark"><span class="template-tag">NEW</span><div class="paper"><small>FUTURE / 2026</small><b>Beyond the Limits</b><i></i><i style="width:43%"></i><div class="shape"></div></div></div><div class="template-info"><b>Dark Future</b><span data-i18n="darkMeta">Technology · Modern</span></div></article>
+      <article class="template-card" data-name="green nature ecology sustainability" data-category="academic" onclick="chooseTemplate('Nature Study')"><div class="template-thumb thumb-green"><div class="paper"><small>GREEN WORLD</small><b>Our Living Planet</b><i></i><i style="width:42%"></i><div class="shape"></div></div></div><div class="template-info"><b>Nature Study</b><span data-i18n="natureMeta">Nature · Education</span></div></article>
+      <article class="template-card" data-name="pink creative art portfolio" data-category="creative" onclick="chooseTemplate('Creative Bloom')"><div class="template-thumb thumb-pink"><div class="paper"><small>CREATIVE STUDIO</small><b>Think in Color</b><i></i><i style="width:40%"></i><div class="shape"></div></div></div><div class="template-info"><b>Creative Bloom</b><span data-i18n="creativeMeta">Creative · Colorful</span></div></article>
+      <article class="template-card" data-name="orange startup business pitch" data-category="business" onclick="chooseTemplate('Startup Pitch')"><div class="template-thumb thumb-orange"><span class="template-tag">TRENDING</span><div class="paper"><small>STARTUP PITCH</small><b>Make It Happen.</b><i></i><i style="width:37%"></i><div class="shape"></div></div></div><div class="template-info"><b>Startup Pitch</b><span data-i18n="startupMeta">Business · Pitch deck</span></div></article>
+      <article class="template-card" data-name="blue modern corporate report" data-category="business" onclick="chooseTemplate('Modern Report')"><div class="template-thumb thumb-blue"><div class="paper"><small>ANNUAL REPORT</small><b>Progress & Vision</b><i></i><i style="width:38%"></i><div class="shape"></div></div></div><div class="template-info"><b>Modern Report</b><span data-i18n="reportMeta">Corporate · Clean</span></div></article>
+      <article class="template-card" data-name="cream history culture museum" data-category="academic" onclick="chooseTemplate('Heritage Story')"><div class="template-thumb thumb-cream"><div class="paper"><small>HISTORY & CULTURE</small><b>Stories of Time</b><i></i><i style="width:42%"></i><div class="shape"></div></div></div><div class="template-info"><b>Heritage Story</b><span data-i18n="heritageMeta">History · Editorial</span></div></article>
+    </div>
+    </div>
+    <div id="pagesHost"></div>
+    <div class="footer-note">Slide Maker AI · Liquid Glass interface · UZ / RU / EN</div>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+  const translations={
+    uz:{home:"Home",slideTools:"SLIDE TOOLS",aiCreate:"AI Presentation",templates:"1000+ Templates",mySlides:"My Presentations",account:"ACCOUNT",signIn:"Sign in / Login",guest:"Mehmon foydalanuvchi",welcome:"Slide Maker'ga xush kelibsiz",workspace:"Ish maydoni",heroEyebrow:"SUN’IY INTELLEKT YORDAMIDA",heroTitle:"G‘oyalaringizni ajoyib taqdimotga aylantiring.",heroDesc:"Mavzuni yozing — sun’iy intellekt siz uchun mazmun, slaydlar tartibi va professional dizaynni tayyorlaydi.",createTitle:"AI yordamida prezentatsiya yarating",createDesc:"Mavzuni kiriting, qolganini AI bajaradi.",generatorTitle:"Yangi prezentatsiya",generatorDesc:"Bir necha soniyada g‘oyangizni slaydlarga aylantiring.",topicLabel:"Prezentatsiya mavzusi",topicPlaceholder:"Masalan: O‘zbekiston iqtisodiyotining rivojlanishi...",languageLabel:"Prezentatsiya tili",slideCount:"Slaydlar soni",audience:"Kim uchun?",students:"Talabalar",school:"Maktab o‘quvchilari",business:"Biznes / Ish",general:"Umumiy auditoriya",detail:"Ma’lumot darajasi",balanced:"O‘rtacha",simple:"Sodda",deep:"Batafsil",generate:"AI bilan prezentatsiya yaratish",aiNote:"AI mavzuga mos dizayn, tuzilma va vizual uslubni taklif qiladi.",smartDesign:"Aqlli dizayn tanlovi",smartDesc:"Har bir mavzu uchun o‘ziga mos ko‘rinish.",templateLibrary:"Shablonlar kutubxonasi",smartFoot:"AI mavzuingizga mos uslubni tanlashga yordam beradi.",popularTemplates:"Mashhur shablonlar",templateDesc:"Boshlash uchun tayyor dizaynlardan birini tanlang.",allCategories:"Barchasi",academic:"Akademik",businessCat:"Biznes",creative:"Kreativ",academicMeta:"Akademik · Professional",minimalMeta:"Minimal · Elegant",darkMeta:"Technology · Modern",natureMeta:"Tabiat · Ta’lim",creativeMeta:"Kreativ · Rang-barang",startupMeta:"Biznes · Pitch deck",reportMeta:"Korporativ · Toza",heritageMeta:"Tarix · Editorial"},
+    ru:{home:"Главная",slideTools:"ИНСТРУМЕНТЫ СЛАЙДОВ",aiCreate:"AI-презентация",templates:"1000+ шаблонов",mySlides:"Мои презентации",account:"АККАУНТ",signIn:"Войти",guest:"Гость",welcome:"Добро пожаловать",workspace:"Рабочая область",heroEyebrow:"ПРЕЗЕНТАЦИИ С ИСКУССТВЕННЫМ ИНТЕЛЛЕКТОМ",heroTitle:"Превратите свои идеи в яркую презентацию.",heroDesc:"Введите тему — ИИ подготовит содержание, структуру слайдов и профессиональный дизайн.",createTitle:"Создайте презентацию с AI",createDesc:"Введите тему, остальное сделает ИИ.",generatorTitle:"Новая презентация",generatorDesc:"Превратите идею в слайды за несколько секунд.",topicLabel:"Тема презентации",topicPlaceholder:"Например: Развитие экономики Узбекистана...",languageLabel:"Язык презентации",slideCount:"Количество слайдов",audience:"Для кого?",students:"Студенты",school:"Школьники",business:"Бизнес / Работа",general:"Общая аудитория",detail:"Уровень подробности",balanced:"Средний",simple:"Простой",deep:"Подробный",generate:"Создать презентацию с AI",aiNote:"ИИ предложит дизайн, структуру и визуальный стиль по теме.",smartDesign:"Умный выбор дизайна",smartDesc:"Подходящий стиль для каждой темы.",templateLibrary:"Библиотека шаблонов",smartFoot:"ИИ поможет выбрать стиль для вашей темы.",popularTemplates:"Популярные шаблоны",templateDesc:"Выберите готовый дизайн для начала.",allCategories:"Все",academic:"Академический",businessCat:"Бизнес",creative:"Креативный",academicMeta:"Академический · Профессиональный",minimalMeta:"Минимализм · Элегантный",darkMeta:"Технологии · Современный",natureMeta:"Природа · Образование",creativeMeta:"Креативный · Яркий",startupMeta:"Бизнес · Питч-дек",reportMeta:"Корпоративный · Чистый",heritageMeta:"История · Редакционный"},
+    en:{home:"Home",slideTools:"SLIDE TOOLS",aiCreate:"AI Presentation",templates:"1000+ Templates",mySlides:"My Presentations",account:"ACCOUNT",signIn:"Sign in / Login",guest:"Guest user",welcome:"Welcome to Slide Maker",workspace:"Workspace",heroEyebrow:"AI POWERED PRESENTATIONS",heroTitle:"Turn your ideas into stunning presentations.",heroDesc:"Enter a topic — AI prepares the content, slide structure and professional design for you.",createTitle:"Create a presentation with AI",createDesc:"Enter your topic. AI handles the rest.",generatorTitle:"New presentation",generatorDesc:"Turn your idea into slides in seconds.",topicLabel:"Presentation topic",topicPlaceholder:"For example: The development of Uzbekistan's economy...",languageLabel:"Presentation language",slideCount:"Number of slides",audience:"Who is it for?",students:"University students",school:"School students",business:"Business / Work",general:"General audience",detail:"Level of detail",balanced:"Balanced",simple:"Simple",deep:"Detailed",generate:"Create presentation with AI",aiNote:"AI suggests a suitable design, structure and visual style.",smartDesign:"Smart design selection",smartDesc:"A fitting look for every topic.",templateLibrary:"Template library",smartFoot:"AI helps choose a style that fits your topic.",popularTemplates:"Popular templates",templateDesc:"Choose a ready-made design to get started.",allCategories:"All categories",academic:"Academic",businessCat:"Business",creative:"Creative",academicMeta:"Academic · Professional",minimalMeta:"Minimal · Elegant",darkMeta:"Technology · Modern",natureMeta:"Nature · Education",creativeMeta:"Creative · Colorful",startupMeta:"Business · Pitch deck",reportMeta:"Corporate · Clean",heritageMeta:"History · Editorial"}
+  };
+
+  Object.assign(translations.uz,{navDocs:"HUJJATLAR",navGames:"O‘YINLAR",soon:"Tez orada",soonMsg:"Bu bo‘lim tez orada qo‘shiladi.",needTopic:"Iltimos, mavzuni kiriting.",errT:"Xatolik",retry:"Qayta urinish",copy:"Nusxalash",print:"Chop etish / PDF",regen:"Qayta yaratish",words:"so‘z",copied:"Nusxalandi",editHint:"Matnni to‘g‘ridan-to‘g‘ri tahrirlashingiz mumkin. Word yoki PDF qilib saqlang.",gen:"AI bilan yaratish",working:"AI yozmoqda… bu 10–30 soniya olishi mumkin.",aiNote2:"AI xato qilishi mumkin — muhim faktlarni tekshiring.",emptyT:"Natija shu yerda ko‘rinadi",n_essay:"Esse",n_article:"Maqola",n_indep:"Mustaqil ish",n_glossary:"Glossariy",n_translator:"Tarjimon",n_crossword:"Krossvord",n_flash:"Flashcards",n_listen:"Listening o‘yini",d_essay:"Mavzu bo‘yicha tuzilmali esse: kirish, asosiy qism va xulosa.",d_article:"Ilmiy yoki blog uslubidagi maqola: annotatsiya, kalit so‘zlar va bo‘limlar.",d_indep:"Titul varag‘i, reja va boblar bilan to‘liq mustaqil ish.",d_glossary:"Mavzu bo‘yicha atamalar va ta’riflar jadvali.",d_translator:"Matnni boshqa tilga aniq va tabiiy tarjima qiling.",f_topic:"Mavzu",f_lang:"Til",f_words:"Hajmi (so‘z)",f_style:"Uslub",f_type:"Turi",f_pages:"Sahifalar soni",f_subject:"Fan nomi",f_student:"Talaba (F.I.O.)",f_uni:"Universitet",f_group:"Guruh",f_teacher:"Tekshiruvchi",f_count:"Atamalar soni",f_source:"Matn (ixtiyoriy)",f_from:"Qaysi tildan",f_to:"Qaysi tilga",ph_topic:"Masalan: Raqamli iqtisodiyotning rivojlanishi",ph_subject:"Masalan: Iqtisodiy siyosat",ph_student:"Ism familiya",ph_uni:"Universitet nomi",ph_group:"Guruh raqami",ph_teacher:"Tekshiruvchi F.I.O.",ph_source:"Atamalar shu matndan olinsin (ixtiyoriy)",ph_src:"Tarjima qilinadigan matnni yozing…",o_academic:"Akademik",o_simple:"Sodda",o_persuasive:"Ishontiruvchi",o_scientific:"Ilmiy maqola",o_blog:"Blog",o_news:"Yangilik",o_auto:"Avto aniqlash",tr_go:"Tarjima qilish",speak:"Eshitish",chars:"belgi"});
+  Object.assign(translations.ru,{navDocs:"ДОКУМЕНТЫ",navGames:"ИГРЫ",soon:"Скоро",soonMsg:"Этот раздел скоро появится.",needTopic:"Пожалуйста, введите тему.",errT:"Ошибка",retry:"Повторить",copy:"Копировать",print:"Печать / PDF",regen:"Создать заново",words:"слов",copied:"Скопировано",editHint:"Текст можно редактировать прямо здесь. Сохраните как Word или PDF.",gen:"Создать с помощью AI",working:"AI пишет… это может занять 10–30 секунд.",aiNote2:"AI может ошибаться — проверяйте важные факты.",emptyT:"Результат появится здесь",n_essay:"Эссе",n_article:"Статья",n_indep:"Самостоятельная работа",n_glossary:"Глоссарий",n_translator:"Переводчик",n_crossword:"Кроссворд",n_flash:"Карточки",n_listen:"Игра на слух",d_essay:"Структурированное эссе по теме: введение, основная часть и вывод.",d_article:"Статья в научном или блог-стиле: аннотация, ключевые слова и разделы.",d_indep:"Самостоятельная работа с титульным листом, планом и главами.",d_glossary:"Таблица терминов и определений по теме.",d_translator:"Точный и естественный перевод текста на другой язык.",f_topic:"Тема",f_lang:"Язык",f_words:"Объём (слов)",f_style:"Стиль",f_type:"Тип",f_pages:"Количество страниц",f_subject:"Название предмета",f_student:"Студент (Ф.И.О.)",f_uni:"Университет",f_group:"Группа",f_teacher:"Проверяющий",f_count:"Количество терминов",f_source:"Текст (необязательно)",f_from:"С какого языка",f_to:"На какой язык",ph_topic:"Например: Развитие цифровой экономики",ph_subject:"Например: Экономическая политика",ph_student:"Имя Фамилия",ph_uni:"Название университета",ph_group:"Номер группы",ph_teacher:"Ф.И.О. проверяющего",ph_source:"Термины будут взяты из этого текста (необязательно)",ph_src:"Введите текст для перевода…",o_academic:"Академический",o_simple:"Простой",o_persuasive:"Убеждающий",o_scientific:"Научная статья",o_blog:"Блог",o_news:"Новость",o_auto:"Определить автоматически",tr_go:"Перевести",speak:"Прослушать",chars:"символов"});
+  Object.assign(translations.en,{navDocs:"DOCUMENTS",navGames:"GAMES",soon:"Soon",soonMsg:"This section is coming soon.",needTopic:"Please enter a topic.",errT:"Error",retry:"Try again",copy:"Copy",print:"Print / PDF",regen:"Regenerate",words:"words",copied:"Copied",editHint:"You can edit the text right here. Save it as Word or PDF.",gen:"Generate with AI",working:"AI is writing… this can take 10–30 seconds.",aiNote2:"AI can make mistakes — please check important facts.",emptyT:"Your result will appear here",n_essay:"Essay",n_article:"Article",n_indep:"Independent work",n_glossary:"Glossary",n_translator:"Translator",n_crossword:"Crossword",n_flash:"Flashcards",n_listen:"Listening Game",d_essay:"A well-structured essay: introduction, main body and conclusion.",d_article:"A scientific or blog-style article with abstract, keywords and sections.",d_indep:"A complete independent paper with title page, plan and chapters.",d_glossary:"A table of key terms and definitions for any topic.",d_translator:"Accurate, natural translation into another language.",f_topic:"Topic",f_lang:"Language",f_words:"Length (words)",f_style:"Style",f_type:"Type",f_pages:"Number of pages",f_subject:"Subject name",f_student:"Student (full name)",f_uni:"University",f_group:"Group",f_teacher:"Checked by",f_count:"Number of terms",f_source:"Text (optional)",f_from:"From",f_to:"To",ph_topic:"E.g.: The rise of the digital economy",ph_subject:"E.g.: Economic policy",ph_student:"Full name",ph_uni:"University name",ph_group:"Group number",ph_teacher:"Teacher's full name",ph_source:"Take the terms from this text (optional)",ph_src:"Type the text to translate…",o_academic:"Academic",o_simple:"Simple",o_persuasive:"Persuasive",o_scientific:"Scientific article",o_blog:"Blog post",o_news:"News article",o_auto:"Detect language",tr_go:"Translate",speak:"Listen",chars:"characters"});
+  let presentationLanguage="uz";
+  function setLanguage(lang){
+    const dict=translations[lang]||translations.uz;document.documentElement.lang=lang;
+    document.querySelectorAll("[data-i18n]").forEach(el=>{const key=el.dataset.i18n;if(dict[key])el.textContent=dict[key]});
+    document.querySelectorAll("[data-placeholder]").forEach(el=>{const key=el.dataset.placeholder;if(dict[key])el.placeholder=dict[key]});
+    const search=document.getElementById("templateSearch");search.placeholder=lang==="ru"?"Поиск шаблонов...":lang==="en"?"Search templates...":"Shablon qidirish...";
+    presentationLanguage=lang;
+  }
+  function toggleTheme(){const dark=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=dark?"light":"dark"}
+  function toggleMenu(open){document.getElementById("sidebar").classList.toggle("open",open);document.getElementById("overlay").classList.toggle("show",open);document.body.style.overflow=open?"hidden":""}
+  function showToast(message){const t=document.getElementById("toast");t.textContent=message;t.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove("show"),2600)}
+  document.querySelectorAll("[data-presentation-lang]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-presentation-lang]").forEach(b=>b.classList.remove("selected"));btn.classList.add("selected");presentationLanguage=btn.dataset.presentationLang}));
+  /* nav handler moved to router below */
+  function generatePresentation(){
+    const topic=document.getElementById("topic").value.trim();if(!topic){showToast("Iltimos, prezentatsiya mavzusini kiriting.");document.getElementById("topic").focus();return}
+    showToast("Dizayn prototipi tayyor. AI yaratish xizmati keyingi bosqichda ulanadi.");
+  }
+  function chooseTemplate(name){document.getElementById("topic").focus();showToast(name+" shabloni tanlandi. Mavzuni kiriting.");}
+  function filterTemplates(){
+    const q=document.getElementById("templateSearch").value.toLowerCase(),cat=document.getElementById("categoryFilter").value;
+    document.querySelectorAll(".template-card").forEach(card=>{const match=card.dataset.name.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=(match&&(cat==="all"||card.dataset.category===cat))?"":"none"});
+  }
+
+  /* ================= Hujjat sahifalari ================= */
+  const API="https://wispy-hill-0adeqolyozma-ai.lochinbekquchqorov8.workers.dev";
+  const $=i=>document.getElementById(i),tr=k=>((translations[document.documentElement.lang]||{})[k])||translations.uz[k]||k;
+  const esc=x=>String(x==null?"":x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const IC={essay:'<path d="M4 20h4l11-11-4-4L4 16zM13 7l4 4"/>',article:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/>',indep:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',glossary:'<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM8 7h7"/>',translator:'<path d="M4 5h9M8 3v2M6 11c2 0 4-2 5-6M7 9c1 2 3 4 5 5M12 21l4-9 4 9M13.5 18h5"/>',crossword:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',flash:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/>',listen:'<path d="M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v6H5a1 1 0 0 1-1-1zM20 14h-3v6h2a1 1 0 0 0 1-1z"/>'};
+  const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IC[n]+'</svg>';
+  const READY=new Set(["essay","article","indep","glossary","translator"]),GROUPS=[["navDocs",["essay","article","indep","glossary","translator"]],["navGames",["crossword","flash","listen"]]];
+  $("dynNav").innerHTML=GROUPS.map(([g,ps])=>'<div class="nav-label" data-i18n="'+g+'"></div><nav class="nav">'+ps.map(p=>'<button data-go="'+p+'" class="'+(READY.has(p)?"":"dim")+'">'+svg(p)+'<span data-i18n="n_'+p+'"></span>'+(READY.has(p)?"":'<em class="soon" data-i18n="soon"></em>')+'</button>').join("")+"</nav>").join("");
+  const DL={uz:{subject:"Fan",topic:"Mavzu",by:"Bajardi",group:"Guruh",chk:"Tekshirdi",plan:"Reja",refs:"Foydalanilgan adabiyotlar",refsNote:"(Manbalarni shu yerga o‘zingiz qo‘shing)",abs:"Annotatsiya",kw:"Kalit so‘zlar",term:"Atama",def:"Ta’rif"},ru:{subject:"Предмет",topic:"Тема",by:"Выполнил(а)",group:"Группа",chk:"Проверил(а)",plan:"План",refs:"Список литературы",refsNote:"(Добавьте источники самостоятельно)",abs:"Аннотация",kw:"Ключевые слова",term:"Термин",def:"Определение"},en:{subject:"Subject",topic:"Topic",by:"Prepared by",group:"Group",chk:"Checked by",plan:"Plan",refs:"References",refsNote:"(Add your sources here)",abs:"Abstract",kw:"Keywords",term:"Term",def:"Definition"}};
+  const DOCS={
+    essay:{mode:"essay",req:"topic",f:[["topic","ta"],["lang","lang"],["words","sel",[300,500,800,1200]],["style","sel",["academic","simple","persuasive"]]]},
+    article:{mode:"article",req:"topic",f:[["topic","ta"],["lang","lang"],["type","sel",["scientific","blog","news"]],["words","sel",[500,800,1200,1800]]]},
+    indep:{mode:"indep",req:"topic",f:[["topic","ta"],["lang","lang"],["pages","sel",[5,8,10,15]],["subject","in"],["student","in"],["uni","in"],["group","in"],["teacher","in"]]},
+    glossary:{mode:"glossary",req:"topic",f:[["topic","ta"],["lang","lang"],["count","sel",[10,15,20,30]],["source","ta"]]}
+  };
+  function go(p,scroll){
+    if(p!=="home"&&!READY.has(p)){showToast(tr("soonMsg"));return}
+    document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+    if(p!=="home"&&!$("p-"+p))build(p);
+    $("p-"+p).classList.add("active");
+    const act=scroll||p;document.querySelectorAll("[data-nav],[data-go]").forEach(b=>b.classList.toggle("active",(b.dataset.go||b.dataset.nav)===act));
+    const key=p==="home"?"home":"n_"+p;$("crumbTitle").dataset.i18n=key;$("crumbTitle").textContent=tr(key);
+    scroll&&$(scroll)?$(scroll).scrollIntoView():window.scrollTo({top:0});toggleMenu(false);history.replaceState(null,"","#"+p);
+  }
+  document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.nav;if(t==="templates"||t==="create")go("home",t);else if(t==="mine")showToast(tr("soonMsg"));else go("home")}));
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.go)));
+  function formHTML(p,c){
+    let h="",buf=[];const flush=()=>{if(buf.length){h+='<div class="field-row">'+buf.map(x=>"<div>"+x+"</div>").join("")+"</div>";buf=[]}};
+    c.f.forEach(([k,t,o])=>{const id=p+"_"+k,lab='<label class="field-label" data-i18n="f_'+k+'"></label>';
+      if(t==="ta"){flush();h+=lab+'<textarea class="topic-input" id="'+id+'" data-placeholder="ph_'+k+'"></textarea>'}
+      else if(t==="in"){buf.push(lab+'<input class="txt" id="'+id+'" data-placeholder="ph_'+k+'">');if(buf.length===2)flush()}
+      else if(t==="sel"){const d=typeof o[0]==="number"?1:0;buf.push(lab+'<select id="'+id+'">'+o.map((v,i)=>'<option value="'+v+'"'+(i===d?" selected":"")+(isNaN(v)?' data-i18n="o_'+v+'"':"")+">"+v+"</option>").join("")+"</select>");if(buf.length===2)flush()}
+      else if(t==="lang"){flush();h+=lab+'<div class="lang-options" id="'+id+'">'+["uz","ru","en"].map(l=>'<button type="button" class="lang-option'+(l===document.documentElement.lang?" selected":"")+'" data-v="'+l+'">'+{uz:"🇺🇿 UZB",ru:"🇷🇺 RU",en:"🇬🇧 ENG"}[l]+"</button>").join("")+"</div>"}});
+    flush();return h;
+  }
+  const empty=()=>'<div class="empty"><b>✦</b><span data-i18n="emptyT"></span></div>';
+  const skel=()=>'<div class="skel"><i style="width:55%;height:20px"></i><i></i><i style="width:92%"></i><i style="width:88%"></i><i style="width:60%"></i><i style="width:96%"></i><i style="width:80%"></i></div><p class="card-sub" data-i18n="working"></p>';
+  const AINOTE='<div class="ai-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span data-i18n="aiNote2"></span></div>';
+  const LANGS=[["uz","O‘zbekcha"],["ru","Русский"],["en","English"],["tr","Türkçe"],["de","Deutsch"],["fr","Français"],["ar","العربية"],["zh","中文"],["ko","한국어"]];
+  function build(p){
+    const s=document.createElement("section");s.className="page";s.id="p-"+p;
+    let body;
+    if(p==="translator"){
+      const opts=(auto)=>(auto?'<option value="auto" data-i18n="o_auto"></option>':"")+LANGS.map(([v,n])=>'<option value="'+v+'">'+n+"</option>").join("");
+      body='<div class="glass-card generator wide"><div class="trgrid"><div><label class="field-label" data-i18n="f_from"></label><select id="tr_from">'+opts(true)+'</select></div><button class="icon-btn" id="tr_swap" type="button" aria-label="swap">⇄</button><div><label class="field-label" data-i18n="f_to"></label><select id="tr_to">'+opts(false)+'</select></div></div>'
+       +'<div class="trgrid" style="margin-top:14px;align-items:start"><div><textarea class="trbox" id="tr_src" data-placeholder="ph_src"></textarea><div class="ai-note"><span id="tr_cnt">0</span>&nbsp;<span data-i18n="chars"></span></div></div><span></span><div><textarea class="trbox" id="tr_out" readonly></textarea><div class="rbar" style="margin:10px 0 0"><button class="btn2" id="tr_copy" type="button">📋 <span data-i18n="copy"></span></button><button class="btn2" id="tr_speak" type="button">🔊 <span data-i18n="speak"></span></button></div></div></div>'
+       +'<button class="primary-btn" id="tr_go"><span>✦</span> <span data-i18n="tr_go"></span></button>'+AINOTE+'</div>';
+    }else body='<div class="glass-card generator">'+formHTML(p,DOCS[p])+'<button class="primary-btn" id="'+p+'_go"><span>✦</span> <span data-i18n="gen"></span></button>'+AINOTE+'</div><div class="glass-card result" id="'+p+'_res">'+empty()+"</div>";
+    s.innerHTML='<div class="glass-card phero"><div class="pico">'+svg(p)+'</div><div><h1 data-i18n="n_'+p+'"></h1><p data-i18n="d_'+p+'"></p></div></div><div class="tool">'+body+"</div>";
+    $("pagesHost").appendChild(s);
+    s.querySelectorAll(".lang-options").forEach(g=>g.addEventListener("click",e=>{const b=e.target.closest(".lang-option");if(!b)return;g.querySelectorAll(".lang-option").forEach(x=>x.classList.remove("selected"));b.classList.add("selected")}));
+    if(p==="translator")wireTr();else{$(p+"_go").onclick=()=>run(p);try{const sv=JSON.parse(localStorage.getItem("sm_"+p)||"null");if(sv)show(p,sv.d,sv.q)}catch(e){}}
+    setLanguage(document.documentElement.lang);
+  }
+  async function call(mode,p){
+    const r=await fetch(API+"/gen",{method:"POST",signal:AbortSignal.timeout(80000),headers:{"content-type":"application/json"},body:JSON.stringify({mode,p})});
+    const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"HTTP "+r.status);return d;
+  }
+  async function run(p){
+    const c=DOCS[p],q={};c.f.forEach(([k,t])=>{const e=$(p+"_"+k);q[k]=t==="lang"?e.querySelector(".selected").dataset.v:e.value.trim()});
+    if(c.req&&!q[c.req]){showToast(tr("needTopic"));$(p+"_"+c.req).focus();return}
+    const res=$(p+"_res"),btn=$(p+"_go");btn.disabled=true;res.innerHTML=skel();setLanguage(document.documentElement.lang);
+    try{const d=await call(c.mode,q);show(p,d.data,q);localStorage.setItem("sm_"+p,JSON.stringify({d:d.data,q}))}
+    catch(e){res.innerHTML='<div class="err"><span><b>'+tr("errT")+":</b> "+esc(e.message)+'</span><button class="btn2" id="'+p+'_retry">'+tr("retry")+"</button></div>";$(p+"_retry").onclick=()=>run(p)}
+    btn.disabled=false;
+  }
+  const para=t=>String(t||"").split(/\n+/).filter(x=>x.trim()).map(x=>"<p>"+esc(x)+"</p>").join("");
+  function docHTML(p,d,q){
+    const D=DL[q.lang]||DL.uz;let h="";
+    if(p==="indep")h+='<div class="tp"><div class="u">'+esc(q.uni||"")+"</div><br><br><div>"+(q.subject?D.subject+": <b>"+esc(q.subject)+"</b><br>":"")+D.topic+": <b>"+esc(d.title||q.topic)+"</b></div><br><br><div>"+(q.student?D.by+": "+esc(q.student)+"<br>":"")+(q.group?D.group+": "+esc(q.group)+"<br>":"")+(q.teacher?D.chk+": "+esc(q.teacher):"")+"</div></div>";
+    h+="<h1>"+esc(d.title||q.topic)+"</h1>";
+    if(p==="article"&&d.abstract)h+="<h2>"+D.abs+"</h2><p>"+esc(d.abstract)+"</p>"+(d.keywords&&d.keywords.length?'<p class="kw"><b>'+D.kw+":</b> "+d.keywords.map(esc).join(", ")+"</p>":"");
+    if(p==="indep"&&d.plan&&d.plan.length)h+="<h2>"+D.plan+"</h2><ol>"+d.plan.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>";
+    (d.sections||[]).forEach(x=>{h+="<h2>"+esc(x.h)+"</h2>"+para(x.t)});
+    if(p!=="essay")h+="<h2>"+D.refs+'</h2><p class="note">'+D.refsNote+"</p>";
+    return h;
+  }
+  function glossHTML(d,q){
+    const D=DL[q.lang]||DL.uz,t=[...(d.terms||[])].sort((a,b)=>String(a.term).localeCompare(String(b.term),q.lang));
+    return "<h1>"+esc(q.topic)+"</h1><table><tr><th>#</th><th>"+D.term+"</th><th>"+D.def+"</th></tr>"+t.map((x,i)=>"<tr><td>"+(i+1)+"</td><td><b>"+esc(x.term)+"</b></td><td>"+esc(x.definition)+"</td></tr>").join("")+"</table>";
+  }
+  function show(p,d,q){
+    const res=$(p+"_res"),inner=p==="glossary"?glossHTML(d,q):docHTML(p,d,q);
+    res.innerHTML='<div class="rbar"><span class="meta" id="'+p+'_meta"></span><button class="btn2" data-a="copy">📋 <span data-i18n="copy"></span></button><button class="btn2" data-a="word">📄 Word</button>'+(p==="glossary"?'<button class="btn2" data-a="csv">⬇ CSV</button>':"")+'<button class="btn2" data-a="print">🖨 <span data-i18n="print"></span></button><button class="btn2" data-a="regen">↻ <span data-i18n="regen"></span></button></div><div class="doc" id="'+p+'_doc" contenteditable="true" spellcheck="false">'+inner+'</div><p class="card-sub" style="margin:12px 0 0" data-i18n="editHint"></p>';
+    const doc=$(p+"_doc"),upd=()=>{$(p+"_meta").textContent=doc.innerText.trim().split(/\s+/).filter(Boolean).length+" "+tr("words")};upd();doc.addEventListener("input",upd);
+    res.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>act(p,b.dataset.a,doc));setLanguage(document.documentElement.lang);upd();
+  }
+  async function saveFile(blob,name){
+    const f=new File([blob],name,{type:blob.type});
+    if(/Android|iPhone|iPad/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e.name==="AbortError")return}}
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  }
+  const wordDoc=(inner,t)=>'<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(t)+'</title><style>@page{size:A4;margin:2cm 1.5cm 2cm 3cm}body{font-family:"Times New Roman";font-size:14pt;line-height:1.5}h1{font-size:18pt;text-align:center}h2{font-size:15pt}p{text-align:justify;text-indent:1.25cm;margin:0 0 6pt}.tp{text-align:center;page-break-after:always}table{border-collapse:collapse;width:100%}td,th{border:1px solid #000;padding:4pt}</style></head><body>'+inner+"</body></html>";
+  async function act(p,a,doc){
+    const title=(doc.querySelector("h1")||{}).innerText||p,slug=title.trim().replace(/[^\p{L}\p{N}]+/gu,"_").slice(0,40)||p;
+    if(a==="copy"){try{await navigator.clipboard.writeText(doc.innerText);showToast(tr("copied"))}catch(e){showToast("Copy failed — select and copy manually")}}
+    else if(a==="word")saveFile(new Blob(["\ufeff"+wordDoc(doc.innerHTML,title)],{type:"application/msword"}),slug+".doc");
+    else if(a==="csv"){const rows=[...doc.querySelectorAll("tr")].map(r=>[...r.children].slice(1).map(c=>'"'+c.innerText.replace(/"/g,'""')+'"').join(","));saveFile(new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv"}),slug+".csv")}
+    else if(a==="print")window.print();else if(a==="regen")run(p);
+  }
+  /* ---- Tarjimon ---- */
+  const VOICE={uz:"uz-UZ",ru:"ru-RU",en:"en-US",tr:"tr-TR",de:"de-DE",fr:"fr-FR",ar:"ar-SA",zh:"zh-CN",ko:"ko-KR"};
+  async function speak(text,lang){
+    const sy=window.speechSynthesis,has=sy&&sy.getVoices().some(v=>v.lang.toLowerCase().startsWith((VOICE[lang]||"en").slice(0,2)));
+    if(has){const u=new SpeechSynthesisUtterance(text);u.lang=VOICE[lang];sy.cancel();sy.speak(u);return}
+    const r=await fetch(API+"/tts",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({text:text.slice(0,1400),voice:"Kore",lang})});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw new Error(d.error||"HTTP "+r.status)}
+    new Audio(URL.createObjectURL(await r.blob())).play();
+  }
+  function wireTr(){
+    $("tr_to").value="en";const src=$("tr_src"),out=$("tr_out"),btn=$("tr_go");
+    src.addEventListener("input",()=>{$("tr_cnt").textContent=src.value.length});
+    $("tr_swap").onclick=()=>{const f=$("tr_from").value,t=$("tr_to").value;$("tr_from").value=t;$("tr_to").value=f==="auto"?(t==="en"?"uz":"en"):f;const o=out.value;out.value=src.value;src.value=o;$("tr_cnt").textContent=src.value.length};
+    $("tr_copy").onclick=async()=>{try{await navigator.clipboard.writeText(out.value);showToast(tr("copied"))}catch(e){showToast("Copy failed — select and copy manually")}};
+    $("tr_speak").onclick=()=>{if(out.value.trim())speak(out.value,$("tr_to").value).catch(e=>showToast(e.message))};
+    btn.onclick=async()=>{const text=src.value.trim();if(!text){src.focus();return}btn.disabled=true;out.value="…";
+      try{const d=await call("translate",{text,from:$("tr_from").value,to:$("tr_to").value});out.value=d.text}catch(e){out.value="";showToast(tr("errT")+": "+e.message)}btn.disabled=false};
+  }
+  const h0=location.hash.slice(1);if(READY.has(h0))go(h0);
+  setLanguage(document.documentElement.lang);
+</script>
+</body>
+</html>
