@@ -200,7 +200,18 @@
       .doc{overflow:visible!important;display:block!important}
       .doc table{display:table!important;overflow:visible!important}
     }
-  </style>
+  
+/* AI presentation viewer */
+.presentation-viewer{margin:24px 0;padding:24px;overflow:hidden}.presentation-viewer[hidden]{display:none!important}
+.presentation-loading{text-align:center;padding:45px 12px}.presentation-loading h3{font-size:23px;margin:14px 0}.presentation-loading p{color:var(--muted)}
+.spin-dot{font-size:40px;color:#6487ff;display:inline-block;animation:pres-spin 2s linear infinite}@keyframes pres-spin{to{transform:rotate(360deg)}}
+.pres-top,.pres-controls,.pres-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.pres-top h2{margin:4px 0 18px;font-size:22px}.pres-top small{letter-spacing:2px;color:#6487ff}
+.pres-stage{max-width:980px;margin:0 auto}.pres-slide{aspect-ratio:16/9;position:relative;overflow:hidden;border-radius:20px;padding:6%;display:flex;flex-direction:column;justify-content:center;color:#172b4f;background:linear-gradient(125deg,#eaf1ff,#fff);box-shadow:0 15px 45px rgba(25,45,90,.12)}
+.pres-theme-1{background:linear-gradient(125deg,#172a52,#3d4c86);color:white}.pres-theme-2{background:linear-gradient(125deg,#eff8f4,#dcece9)}.pres-theme-3{background:linear-gradient(125deg,#302654,#695b94);color:white}
+.pres-slide h3{font-size:clamp(20px,3.2vw,46px);line-height:1.14;max-width:85%;margin:14px 0}.pres-subtitle{font-size:clamp(12px,1.5vw,22px);opacity:.8}.pres-bullets{max-width:90%;padding-left:1.4em;font-size:clamp(11px,1.45vw,21px);line-height:1.35}.pres-bullets li{margin:0 0 .65em}.pres-index{position:absolute;top:6%;left:6%;font-size:11px;letter-spacing:2px;opacity:.65}.pres-decor{position:absolute;right:-3%;top:-18%;font-size:clamp(150px,30vw,380px);opacity:.07;pointer-events:none}.pres-footer{position:absolute;bottom:5%;left:6%;right:6%;display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.5px;opacity:.6}
+.pres-notes{margin:14px 0;color:var(--text)}.pres-notes p{line-height:1.6}.pres-controls{justify-content:center;margin:18px 0}.pres-controls span{font-weight:700;min-width:70px;text-align:center}.pres-thumbs{display:flex;gap:9px;overflow-x:auto;padding:7px 0 14px}.pres-thumb{flex:0 0 130px;display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);text-align:left;font-size:12px}.pres-thumb.selected{outline:2px solid #6487ff}.pres-thumb span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}.pres-thumb b{color:#6487ff}
+@media(max-width:640px){.presentation-viewer{padding:12px}.pres-slide{border-radius:12px;padding:8%}.pres-slide h3{font-size:clamp(17px,5vw,26px)}.pres-bullets{font-size:clamp(9px,2.6vw,14px);line-height:1.22}.pres-bullets li{margin-bottom:.4em}.pres-footer,.pres-index{font-size:7px}.pres-top h2{font-size:18px}.pres-thumb{flex-basis:110px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -248,7 +259,7 @@
       <div class="eyebrow"><span class="spark">✦</span><span data-i18n="heroEyebrow">AI POWERED PRESENTATIONS</span></div>
       <h1 data-i18n="heroTitle">G‘oyalaringizni ajoyib taqdimotga aylantiring.</h1>
       <p data-i18n="heroDesc">Mavzuni yozing — sun’iy intellekt siz uchun mazmun, slaydlar tartibi va professional dizaynni tayyorlaydi.</p>
-      <div class="hero-chips"><span class="chip">✦ AI presentation</span><span class="chip">1000+ templates</span><span class="chip">UZ · RU · EN</span></div>
+      <div class="hero-chips"><span class="chip">✦ AI presentation</span><span class="chip">Shablonlar</span><span class="chip">UZ · RU · EN</span></div>
     </section>
 
     <div class="section-head" id="create">
@@ -265,7 +276,7 @@
             <div class="lang-options"><button class="lang-option selected" data-presentation-lang="uz">🇺🇿 UZB</button><button class="lang-option" data-presentation-lang="ru">🇷🇺 RU</button><button class="lang-option" data-presentation-lang="en">🇬🇧 ENG</button></div>
           </div>
           <div><label class="field-label" for="slideCount" data-i18n="slideCount">Slaydlar soni</label>
-            <select id="slideCount"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>25</option><option>30</option></select>
+            <select id="slideCount"><option>5</option><option selected>10</option><option>15</option><option>20</option><option>30</option></select>
           </div>
         </div>
         <div class="field-row">
@@ -279,10 +290,11 @@
         <h3 class="card-title" data-i18n="smartDesign">Aqlli dizayn tanlovi</h3>
         <p class="card-sub" data-i18n="smartDesc">Har bir mavzu uchun o‘ziga mos ko‘rinish.</p>
         <div class="quick-visual"><div class="slide-mini"><small>YOUR NEXT PRESENTATION</small><b>Ideas into impact.</b><span></span><span style="width:35%"></span></div></div>
-        <div class="quick-stat"><span data-i18n="templateLibrary">Shablonlar kutubxonasi</span><strong>1000+</strong></div>
+        <div class="quick-stat"><span data-i18n="templateLibrary">Shablonlar kutubxonasi</span><strong>8 ta boshlang‘ich</strong></div>
         <p class="card-sub" style="margin:7px 0 0" data-i18n="smartFoot">AI mavzuingizga mos uslubni tanlashga yordam beradi.</p>
       </aside>
     </section>
+    <section id="presentationViewer" class="glass-card presentation-viewer" hidden aria-live="polite"></section>
 
     <div class="section-head" id="templates">
       <div><h2 data-i18n="popularTemplates">Mashhur shablonlar</h2><p data-i18n="templateDesc">Boshlash uchun tayyor dizaynlardan birini tanlang.</p></div>
@@ -330,10 +342,50 @@
   function showToast(message){const t=document.getElementById("toast");t.textContent=message;t.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove("show"),2600)}
   document.querySelectorAll("[data-presentation-lang]").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll("[data-presentation-lang]").forEach(b=>b.classList.remove("selected"));btn.classList.add("selected");presentationLanguage=btn.dataset.presentationLang}));
   /* nav handler moved to router below */
-  function generatePresentation(){
-    const topic=document.getElementById("topic").value.trim();if(!topic){showToast("Iltimos, prezentatsiya mavzusini kiriting.");document.getElementById("topic").focus();return}
-    showToast("Dizayn prototipi tayyor. AI yaratish xizmati keyingi bosqichda ulanadi.");
+  const PRESENTATION_API="https://slide-maker-ai.lochinbekquchqorov8.workers.dev/presentation";
+  let currentPresentation=null, activeSlide=0;
+  const slideEsc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  async function generatePresentation(){
+    const topic=document.getElementById("topic").value.trim();
+    if(!topic){showToast("Iltimos, prezentatsiya mavzusini kiriting.");document.getElementById("topic").focus();return}
+    const count=Number(document.getElementById("slideCount").value);
+    const btn=document.querySelector('button[onclick="generatePresentation()"]');
+    const viewer=document.getElementById("presentationViewer");
+    btn.disabled=true;viewer.hidden=false;
+    viewer.innerHTML='<div class="presentation-loading"><span class="spin-dot">✦</span><h3>AI prezentatsiya yaratmoqda…</h3><p>Slaydlar tayyorlanmoqda. 20–30 slayd uchun ko‘proq vaqt ketishi mumkin.</p></div>';
+    viewer.scrollIntoView({behavior:"smooth",block:"start"});
+    try{
+      const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),110000);
+      let response;
+      try{response=await fetch(PRESENTATION_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({topic,count,lang:presentationLanguage}),signal:controller.signal})}
+      finally{clearTimeout(timer)}
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.ok)throw new Error(data.error||"AI server javob bermadi (HTTP "+response.status+")");
+      if(!data.presentation||!Array.isArray(data.presentation.slides)||!data.presentation.slides.length)throw new Error("AI slayd ma’lumotini qaytarmadi");
+      currentPresentation=data.presentation;activeSlide=0;
+      try{localStorage.setItem("sm_last_presentation",JSON.stringify(currentPresentation))}catch(e){}
+      renderPresentation();
+    }catch(e){viewer.innerHTML='<div class="presentation-loading"><h3>Prezentatsiya yaratilmadi</h3><p>'+slideEsc(e.name==="AbortError"?"So‘rov uzoq davom etdi. Birozdan keyin qayta urinib ko‘ring.":e.message)+'</p><button class="btn2" onclick="generatePresentation()">Qayta urinish</button></div>'}
+    finally{btn.disabled=false}
   }
+  function renderPresentation(){
+    const viewer=document.getElementById("presentationViewer");if(!currentPresentation)return;
+    const slides=currentPresentation.slides,slide=slides[activeSlide];
+    const title=slideEsc(slide.title||"Slayd "+(activeSlide+1));
+    const bullets=Array.isArray(slide.bullets)?slide.bullets:[];
+    const subtitle=slide.subtitle?'<p class="pres-subtitle">'+slideEsc(slide.subtitle)+'</p>':"";
+    const bulletHtml=bullets.length?'<ul class="pres-bullets">'+bullets.map(b=>'<li>'+slideEsc(b)+'</li>').join("")+'</ul>':"";
+    const notes=slide.speakerNotes?'<details class="pres-notes"><summary>Ma’ruzachi uchun izoh</summary><p>'+slideEsc(slide.speakerNotes)+'</p></details>':"";
+    viewer.innerHTML='<div class="pres-top"><div><small>AI PRESENTATION</small><h2>'+slideEsc(currentPresentation.title||"Prezentatsiya")+'</h2></div><div class="pres-actions"><button class="btn2" onclick="downloadPresentationJSON()">JSON ↓</button><button class="btn2" onclick="printPresentation()">PDF / Chop etish</button></div></div>'+
+      '<div class="pres-stage"><div class="pres-slide pres-theme-'+(activeSlide%4)+'"><div class="pres-decor">✦</div><div class="pres-index">SLIDE '+String(activeSlide+1).padStart(2,"0")+' / '+slides.length+'</div><h3>'+title+'</h3>'+subtitle+bulletHtml+'<div class="pres-footer">SLIDE MAKER AI <span>'+slideEsc(slide.layout||"presentation")+'</span></div></div></div>'+
+      notes+'<div class="pres-controls"><button class="btn2" onclick="changeSlide(-1)" '+(activeSlide===0?"disabled":"")+'>← Oldingi</button><span>'+(activeSlide+1)+' / '+slides.length+'</span><button class="btn2" onclick="changeSlide(1)" '+(activeSlide===slides.length-1?"disabled":"")+'>Keyingi →</button></div>'+
+      '<div class="pres-thumbs">'+slides.map((s,i)=>'<button class="pres-thumb '+(i===activeSlide?"selected":"")+'" onclick="jumpSlide('+i+')"><b>'+(i+1)+'</b><span>'+slideEsc(s.title||"Slayd")+'</span></button>').join("")+'</div>';
+  }
+  function changeSlide(delta){jumpSlide(activeSlide+delta)}
+  function jumpSlide(index){if(!currentPresentation||index<0||index>=currentPresentation.slides.length)return;activeSlide=index;renderPresentation()}
+  function downloadPresentationJSON(){if(!currentPresentation)return;const blob=new Blob([JSON.stringify(currentPresentation,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="slide-maker-presentation.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  function printPresentation(){if(!currentPresentation)return;const slides=currentPresentation.slides;const style='@page{size:landscape;margin:0}body{margin:0;font-family:Arial,sans-serif;color:#16284b}section{box-sizing:border-box;width:100vw;height:100vh;padding:7%;page-break-after:always;break-after:page;background:linear-gradient(125deg,#f0f5ff,#fff)}section:nth-child(even){background:linear-gradient(125deg,#142647,#283d73);color:white}h1{font-size:42px;margin:12px 0 28px}p,li{font-size:24px;line-height:1.5}li{margin:12px 0}small{letter-spacing:3px;color:#5a83d7}section:nth-child(even) small{color:#a9c3ff}';const html='<!doctype html><html><head><meta charset="utf-8"><title>Slide Maker AI</title><style>'+style+'</style></head><body>'+slides.map((s,i)=>'<section><small>SLIDE '+(i+1)+' / '+slides.length+'</small><h1>'+slideEsc(s.title||"")+'</h1>'+(s.subtitle?'<p>'+slideEsc(s.subtitle)+'</p>':"")+'<ul>'+(Array.isArray(s.bullets)?s.bullets:[]).map(b=>'<li>'+slideEsc(b)+'</li>').join("")+'</ul></section>').join("")+'</body></html>';const blob=new Blob([html],{type:"text/html"});const url=URL.createObjectURL(blob);const win=window.open(url,"_blank");if(!win){showToast("Brauzer pop-up oynasiga ruxsat bering.");URL.revokeObjectURL(url);return}setTimeout(()=>{try{win.print()}catch(e){}},900);setTimeout(()=>URL.revokeObjectURL(url),60000)}
+
   function chooseTemplate(name){document.getElementById("topic").focus();showToast(name+" shabloni tanlandi. Mavzuni kiriting.");}
   function filterTemplates(){
     const q=document.getElementById("templateSearch").value.toLowerCase(),cat=document.getElementById("categoryFilter").value;
