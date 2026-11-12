@@ -421,8 +421,8 @@ body::after{background:radial-gradient(ellipse at 70% 25%,rgba(52,220,188,.20),t
     viewer.scrollIntoView({behavior:"smooth",block:"start"});
     const allSlides=[];
     try{
-      for(let offset=0;offset<count;offset+=5){
-        const batchSize=Math.min(5,count-offset);
+      for(let offset=0;offset<count;offset+=2){
+        const batchSize=Math.min(2,count-offset);
         viewer.innerHTML='<div class="presentation-loading"><span class="spin-dot">✦</span><h3>AI prezentatsiya yaratmoqda…</h3><p>'+offset+' / '+count+' slayd tayyor. Keyingi '+batchSize+' ta slayd yaratilmoqda…</p></div>';
         let result;
         for(let attempt=0;attempt<2;attempt++){
@@ -452,6 +452,13 @@ body::after{background:radial-gradient(ellipse at 70% 25%,rgba(52,220,188,.20),t
       renderPresentation();
       v5FindImages().catch(console.warn);
     }catch(e){
+      if(allSlides.length){
+        currentPresentation={title:topic,language:presentationLanguage,slides:allSlides};
+        activeSlide=0;resolvedImages.clear();renderPresentation();
+        showToast("Qisman yaratildi: "+allSlides.length+" / "+count+" slayd. PDF/PPTX yuklab olish mumkin.");
+        v5FindImages().catch(console.warn);
+        return;
+      }
       viewer.innerHTML='<div class="presentation-loading"><h3>Prezentatsiya yaratilmadi</h3><p>'+slideEsc(e.name==="AbortError"?"AI javobi kechikdi. Qayta urinib ko‘ring.":e.message)+'</p><p>'+allSlides.length+' / '+count+' slayd tayyorlangan edi.</p><button class="btn2" onclick="generatePresentation()">Qayta urinish</button></div>';
     }finally{btn.disabled=false}
   }
